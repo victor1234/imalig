@@ -1,1 +1,5 @@
 build
+.clangd
+.idea
+cmake-*
+compile_commands.json
