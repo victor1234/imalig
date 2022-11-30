@@ -19,6 +19,11 @@ configure_file(
     ${CMAKE_CURRENT_BINARY_DIR}/fixtures/barcode.png
     COPYONLY
 )
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/fixtures/camera-parameters.yml
+    ${CMAKE_CURRENT_BINARY_DIR}/fixtures/camera-parameters.yml
+    COPYONLY
+)
 
 # Discover tests
 catch_discover_tests(unit_tests)
