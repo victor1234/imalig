@@ -5,7 +5,18 @@
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include <ceres/ceres.h>
+
+
 namespace imalig {
+
+struct CostFunctor {
+	template <typename T>
+	bool operator()(const T* const x, T* residual) const {
+		residual[0] = T(10.0) - x[0];
+		return true;
+	}
+};
 
 std::vector<cv::Point2f> imalig(const cv::Mat barcode, cv::Mat image, const int markerId,
 								const std::vector<cv::Point2f> markerCorners)

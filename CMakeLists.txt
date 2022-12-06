@@ -4,6 +4,7 @@ project(imalig)
 
 find_package(OpenCV REQUIRED)
 find_package(Catch2 REQUIRED)
+find_package(Ceres REQUIRED)
 
 set(IA_TARGET_NAME ${PROJECT_NAME})
 add_library(${IA_TARGET_NAME} sources/imalig.cpp)
@@ -21,6 +22,7 @@ target_include_directories(
 )
 
 target_link_libraries(${IA_TARGET_NAME} opencv::opencv)
+target_link_libraries(${IA_TARGET_NAME} Ceres::ceres)
 
 add_subdirectory(tests)
 add_subdirectory(examples)
