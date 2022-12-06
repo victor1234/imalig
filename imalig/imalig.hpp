@@ -3,5 +3,5 @@
 #include <opencv2/core.hpp>
 
 namespace imalig {
-bool imalig(const cv::Mat barcode, const cv::Mat image);
+  std::vector<cv::Point2f> imalig(const cv::Mat barcode, const cv::Mat image, const int markerId, const std::vector<cv::Point2f> markerCorners);
 }

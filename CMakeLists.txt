@@ -23,3 +23,4 @@ target_include_directories(
 target_link_libraries(${IA_TARGET_NAME} opencv::opencv)
 
 add_subdirectory(tests)
+add_subdirectory(examples)
