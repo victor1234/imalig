@@ -24,5 +24,9 @@ target_include_directories(
 target_link_libraries(${IA_TARGET_NAME} opencv::opencv)
 target_link_libraries(${IA_TARGET_NAME} Ceres::ceres)
 
+# Set compiler features
+target_compile_features(${IA_TARGET_NAME} PUBLIC cxx_std_20)
+set_target_properties(${IA_TARGET_NAME} PROPERTIES CXX_STANDARD_REQUIRED ON)
+
 add_subdirectory(tests)
 add_subdirectory(examples)
