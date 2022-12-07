@@ -1,6 +1,7 @@
 #include "imalig/imalig.hpp"
 #include <iostream>
 
+#include <memory>
 #include <opencv2/core/types.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -35,7 +36,7 @@ struct CostFunctor {
 
 		/* Create image interpolator */
 		ceres::Grid2D<double, 1> imageGrid(reinterpret_cast<double*>(barcode.data), 0, barcode.rows, 0, barcode.cols);
-		interpolator = std::move(ceres::BiCubicInterpolator<Grid2D>{imageGrid});
+		interpolator = std::make_unique<Interpolator>(imageGrid);
 	}
 
 	template <typename T>
@@ -49,7 +50,7 @@ struct CostFunctor {
 			T y = imagePoints(1, j) / imagePoints(2, j);
 
 			T value;
-			interpolator.Evaluate(y, x, &value);
+			interpolator->Evaluate(y, x, &value);
 
 			residual[j] = value - barcode.data[sizeof(double) * j];
 		}
@@ -61,7 +62,7 @@ private:
 	cv::Mat barcode;
 	cv::Mat image;
 	Eigen::MatrixXd barcodePoints;
-	Interpolator interpolator;
+	std::unique_ptr<Interpolator> interpolator;
 };
 
 std::vector<cv::Point2f> imalig(const cv::Mat barcode, cv::Mat image, const int markerId,
@@ -75,6 +76,25 @@ std::vector<cv::Point2f> imalig(const cv::Mat barcode, cv::Mat image, const int 
 
 	cv::Mat H = cv::getPerspectiveTransform(markerCorners0, markerCorners);
 	std::cout << "H = " << H << std::endl;
+
+	/* Create ceres problem */
+	ceres::Problem problem;
+
+	ceres::CostFunction *costFunction = new ceres::AutoDiffCostFunction<CostFunctor, ceres::DYNAMIC, 9>(
+		new CostFunctor(barcode, image), barcode.rows * barcode.cols);
+
+	problem.AddResidualBlock(costFunction, nullptr, H.ptr<double>());
+
+	/* Run solver */
+	ceres::Solver::Options options;
+	options.linear_solver_type = ceres::DENSE_QR;
+	options.minimizer_progress_to_stdout = true;
+	options.max_num_iterations = 1000;
+	ceres::Solver::Summary summary;
+	ceres::Solve(options, &problem, &summary);
+
+	std::cout << summary.FullReport() << std::endl;
+
 
 	return {};
 }
