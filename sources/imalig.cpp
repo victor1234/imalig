@@ -13,6 +13,9 @@
 namespace imalig {
 
 struct CostFunctor {
+	using Grid2D = ceres::Grid2D<double, 1>;
+	using Interpolator = ceres::BiCubicInterpolator<Grid2D>;
+
 	CostFunctor(const cv::Mat barcode, const cv::Mat image)
 		: barcode(barcode), barcodePoints(3, barcode.rows * barcode.cols), image(image)
 	{
@@ -32,12 +35,25 @@ struct CostFunctor {
 
 		/* Create image interpolator */
 		ceres::Grid2D<double, 1> imageGrid(reinterpret_cast<double*>(barcode.data), 0, barcode.rows, 0, barcode.cols);
-		ceres::BiCubicInterpolator interpolator(imageGrid);
+		interpolator = std::move(ceres::BiCubicInterpolator<Grid2D>{imageGrid});
 	}
 
 	template <typename T>
-	bool operator()(const T* const x, T* residual) const {
-		residual[0] = T(10.0) - x[0];
+	bool operator()(const T* const h, T* residual) const {
+		Eigen::Matrix<T, 3, 3> H{h[0], h[1], h[2], h[3], h[4], h[5], h[6], h[7], h[8]};
+
+		Eigen::MatrixX<T> imagePoints = H * barcodePoints;
+		
+		for (int j = 0; j < barcodePoints.cols(); j++) {
+			T x = imagePoints(0, j) / imagePoints(2, j);
+			T y = imagePoints(1, j) / imagePoints(2, j);
+
+			T value;
+			interpolator.Evaluate(y, x, &value);
+
+			residual[j] = value - barcode.data[sizeof(double) * j];
+		}
+
 		return true;
 	}
 
@@ -45,6 +61,7 @@ private:
 	cv::Mat barcode;
 	cv::Mat image;
 	Eigen::MatrixXd barcodePoints;
+	Interpolator interpolator;
 };
 
 std::vector<cv::Point2f> imalig(const cv::Mat barcode, cv::Mat image, const int markerId,
