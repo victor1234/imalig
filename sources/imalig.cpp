@@ -74,8 +74,9 @@ std::vector<cv::Point2f> imalig(const cv::Mat barcode, cv::Mat image, const int 
 
 	cv::Mat markerCorners0;
 	cv::Mat(markerCorners2i).convertTo(markerCorners0, CV_32F);
+	std::cout << markerCorners0 << std::endl;
 
-	cv::Mat H = cv::getPerspectiveTransform(markerCorners0, 10 + cv::Mat(markerCorners));
+	cv::Mat H = cv::getPerspectiveTransform(markerCorners0, 0 + cv::Mat(markerCorners));
 	std::cout << "H = " << H << std::endl;
 
 	/* Create ceres problem */
@@ -96,7 +97,19 @@ std::vector<cv::Point2f> imalig(const cv::Mat barcode, cv::Mat image, const int 
 
 	std::cout << summary.FullReport() << std::endl;
 
-	return {};
+
+	/* Compute new marker corners */
+	std::vector<cv::Point2f> preciseMarkerCorners;
+	for (const auto& cp : markerCorners2i) {
+		std::cout << cp << std::endl;
+		cv::Vec3d p(cp.x, cp.y, 1);
+		cv::Vec3d p2 = cv::Matx33d(H) * p;
+		std::cout << p2 << std::endl;
+		preciseMarkerCorners.emplace_back(cv::Point2d(p2[0] / p2[2], p2[1] / p2[2]));
+	}
+
+
+	return preciseMarkerCorners;
 }
 
 } // namespace imalig
