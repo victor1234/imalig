@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
 							0, image.cols * 0.8, image.rows / 2., 
 							0, 0, 1 };
 	cv::Mat distCoeffs = cv::Mat::zeros(4, 1, CV_64F);
-	cv::Vec3d rvec, tvec;
+	std::vector<cv::Vec3d> rvec, tvec;
 	cv::aruco::estimatePoseSingleMarkers(markersCorners, 0.1, cameraMatrix, distCoeffs, rvec, tvec);
 	cv::aruco::drawAxis(outImage, cameraMatrix, distCoeffs, rvec, tvec, 0.1);
 
