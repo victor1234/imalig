@@ -45,6 +45,15 @@ int main(int argc, char *argv[])
 	markersCorners[0] = corners;
 	cv::aruco::drawDetectedMarkers(outImage, markersCorners, markersId, {0, 0, 255});
 
+	/* Pose estimation */
+	cv::Matx33d cameraMatrix{ image.cols *  0.8, 0, image.cols / 2.,
+							0, image.cols * 0.8, image.rows / 2., 
+							0, 0, 1 };
+	cv::Mat distCoeffs = cv::Mat::zeros(4, 1, CV_64F);
+	cv::Vec3d rvec, tvec;
+	cv::aruco::estimatePoseSingleMarkers(markersCorners, 0.1, cameraMatrix, distCoeffs, rvec, tvec);
+	cv::aruco::drawAxis(outImage, cameraMatrix, distCoeffs, rvec, tvec, 0.1);
+
 	imshow("result", outImage);
 	cv::waitKey(0);
 
