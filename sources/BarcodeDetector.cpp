@@ -15,10 +15,10 @@ std::tuple<std::vector<int>, std::vector<std::vector<cv::Point2f>>> BarcodeDetec
 	std::vector<std::vector<cv::Point2f>> markersCorners, rejectedCandidates;
 	cv::aruco::detectMarkers(image, dictionary, markersCorners, markersId, parameters, rejectedCandidates);
 
-	cv::Mat outImage = image.clone();
-	cv::aruco::drawDetectedMarkers(outImage, markersCorners, markersId);
-	imshow("result", outImage);
-	cv::waitKey(0);
+	// cv::Mat outImage = image.clone();
+	// cv::aruco::drawDetectedMarkers(outImage, markersCorners, markersId);
+	// imshow("result", outImage);
+	// cv::waitKey(0);
 	return {markersId, markersCorners};
 }
 } // namespace imalig
