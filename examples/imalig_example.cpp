@@ -1,3 +1,4 @@
+#include "imalig/BarcodeDetector.hpp"
 #include <iostream>
 #include <opencv2/aruco.hpp>
 #include <opencv2/aruco/dictionary.hpp>
@@ -18,16 +19,13 @@ int main(int argc, char *argv[])
 	cv::Mat barcode = cv::imread(argv[1], cv::IMREAD_GRAYSCALE);
 	cv::Mat image = cv::imread(argv[2], cv::IMREAD_COLOR);
 
-	/* Create aruco dictionary */
-	cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
+  /* Create barcode detector */
+  imalig::BarcodeDetector barcodeDetector;
 
-	/* Detect aruco markers */
-	auto parameters = cv::aruco::DetectorParameters::create();
-	std::vector<int> markersId;
-	std::vector<std::vector<cv::Point2f>> markersCorners, rejectedCandidates;
+  /* Detect markers */
 	cv::Mat imageGray;
 	cv::cvtColor(image, imageGray, cv::COLOR_BGR2GRAY);
-	cv::aruco::detectMarkers(imageGray, dictionary, markersCorners, markersId, parameters, rejectedCandidates);
+  auto [markersId, markersCorners] = barcodeDetector.detect(imageGray);
 
 	/* Show result */
 	//cv::imshow("barcode", barcode);
@@ -38,7 +36,7 @@ int main(int argc, char *argv[])
 	//cv::waitKey(0);
 
 	/* Run imalig */
-	auto corners = imalig::imalig(barcode, imageGray, markersId[0], markersCorners[0]);
+	auto corners = imalig::Imalig().process(barcode, imageGray, markersId[0], markersCorners[0]);
 	std::cout << "corners = " << corners << std::endl;
 
 	cv::Mat outImage2 = image.clone();
