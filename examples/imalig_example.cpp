@@ -28,12 +28,12 @@ int main(int argc, char *argv[])
   auto [markersId, markersCorners] = barcodeDetector.detect(imageGray);
 
 	/* Show result */
-	//cv::imshow("barcode", barcode);
-	//cv::imshow("image", image);
+	// cv::imshow("barcode", barcode);
+	// cv::imshow("image", image);
 	cv::Mat outImage = image.clone();
 	cv::aruco::drawDetectedMarkers(outImage, markersCorners, markersId);
-	//imshow("result", outImage);
-	//cv::waitKey(0);
+	imshow("result", outImage);
+	cv::waitKey(0);
 
 	/* Run imalig */
 	auto corners = imalig::Imalig().process(barcode, imageGray, markersId[0], markersCorners[0]);
