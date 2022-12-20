@@ -3,15 +3,14 @@
 
 namespace imalig {
 
-BarcodeDetector::BarcodeDetector() {
-  dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
-}
+BarcodeDetector::BarcodeDetector() { dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50); }
 
-cv::Mat BarcodeDetector::drawMarker(int id, int size) {
-  cv::Mat markerImage;
-  cv::aruco::drawMarker(dictionary, id, size, markerImage, 1);
+cv::Mat BarcodeDetector::drawMarker(int id, int size)
+{
+	cv::Mat markerImage;
+	cv::aruco::drawMarker(dictionary, id, size, markerImage, 1);
 
-  return markerImage;
+	return markerImage;
 }
 
 std::tuple<std::vector<int>, std::vector<std::vector<cv::Point2f>>> BarcodeDetector::detect(const cv::Mat image)

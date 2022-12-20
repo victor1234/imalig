@@ -1,9 +1,9 @@
 #pragma once
 
-#include <vector>
-#include <opencv2/core.hpp>
 #include <ceres/ceres.h>
 #include <ceres/cubic_interpolation.h>
+#include <opencv2/core.hpp>
+#include <vector>
 
 namespace imalig {
 

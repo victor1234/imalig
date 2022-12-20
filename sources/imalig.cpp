@@ -14,7 +14,7 @@
 namespace imalig {
 
 std::vector<cv::Point2f> Imalig::process(const cv::Mat barcode, cv::Mat image, const int markerId,
-								const std::vector<cv::Point2f> markerCorners)
+										 const std::vector<cv::Point2f> markerCorners)
 {
 	std::vector<cv::Point2i> markerCorners2i = {
 		{0, 0}, {barcode.rows, 0}, {barcode.rows, barcode.cols}, {0, barcode.cols}};

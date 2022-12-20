@@ -1,11 +1,8 @@
 #include "imalig/BarcodeDetector.hpp"
 #include <iostream>
-#include <opencv2/aruco.hpp>
-#include <opencv2/aruco/dictionary.hpp>
 #include <opencv2/highgui.hpp>
 
 #include <imalig/imalig.hpp>
-#include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
 
 int main(int argc, char *argv[])
@@ -15,16 +12,16 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-  int markerId = std::stoi(argv[1]);
+	int markerId = std::stoi(argv[1]);
 	cv::Mat image = cv::imread(argv[2], cv::IMREAD_COLOR);
 
-  /* Create barcode detector */
-  imalig::BarcodeDetector barcodeDetector;
+	/* Create barcode detector */
+	imalig::BarcodeDetector barcodeDetector;
 
-  /* Detect markers */
+	/* Detect markers */
 	cv::Mat imageGray;
 	cv::cvtColor(image, imageGray, cv::COLOR_BGR2GRAY);
-  auto [markersId, markersCorners] = barcodeDetector.detect(imageGray);
+	auto [markersId, markersCorners] = barcodeDetector.detect(imageGray);
 
 	/* Show result */
 	// cv::imshow("barcode", barcode);
@@ -35,7 +32,7 @@ int main(int argc, char *argv[])
 	cv::waitKey(0);
 
 	/* Run imalig */
-  cv::Mat barcode = barcodeDetector.drawMarker(markerId, 200);
+	cv::Mat barcode = barcodeDetector.drawMarker(markerId, 200);
 	auto corners = imalig::Imalig().process(barcode, imageGray, markersId[0], markersCorners[0]);
 	std::cout << "corners = " << corners << std::endl;
 
@@ -44,9 +41,7 @@ int main(int argc, char *argv[])
 	cv::aruco::drawDetectedMarkers(outImage, markersCorners, markersId, {0, 0, 255});
 
 	/* Pose estimation */
-	cv::Matx33d cameraMatrix{ image.cols *  0.8, 0, image.cols / 2.,
-							0, image.cols * 0.8, image.rows / 2., 
-							0, 0, 1 };
+	cv::Matx33d cameraMatrix{image.cols * 0.8, 0, image.cols / 2., 0, image.cols * 0.8, image.rows / 2., 0, 0, 1};
 	cv::Mat distCoeffs = cv::Mat::zeros(4, 1, CV_64F);
 	std::vector<cv::Vec3d> rvec, tvec;
 	cv::aruco::estimatePoseSingleMarkers(markersCorners, 0.1, cameraMatrix, distCoeffs, rvec, tvec);
