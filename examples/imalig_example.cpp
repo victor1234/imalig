@@ -15,8 +15,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	/*Load images */
-	cv::Mat barcode = cv::imread(argv[1], cv::IMREAD_GRAYSCALE);
+  int markerId = std::stoi(argv[1]);
 	cv::Mat image = cv::imread(argv[2], cv::IMREAD_COLOR);
 
   /* Create barcode detector */
@@ -36,6 +35,7 @@ int main(int argc, char *argv[])
 	cv::waitKey(0);
 
 	/* Run imalig */
+  cv::Mat barcode = barcodeDetector.drawMarker(markerId, 200);
 	auto corners = imalig::Imalig().process(barcode, imageGray, markersId[0], markersCorners[0]);
 	std::cout << "corners = " << corners << std::endl;
 

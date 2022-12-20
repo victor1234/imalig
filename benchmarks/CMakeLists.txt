@@ -11,8 +11,3 @@ configure_file(
     ${CMAKE_CURRENT_BINARY_DIR}/fixtures/image.jpg
     COPYONLY
 )
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/fixtures/barcode.png
-    ${CMAKE_CURRENT_BINARY_DIR}/fixtures/barcode.png
-    COPYONLY
-)

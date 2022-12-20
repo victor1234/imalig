@@ -8,12 +8,12 @@
 
 TEST_CASE("Main")
 {
-	cv::Mat barcode = cv::imread("fixtures/barcode.png", cv::IMREAD_GRAYSCALE);
 	cv::Mat image = cv::imread("fixtures/image.jpg", cv::IMREAD_GRAYSCALE);
 
   imalig::BarcodeDetector barcodeDetector;
   auto [markersId, markersCorners] = barcodeDetector.detect(image);
 
+  cv::Mat barcode = barcodeDetector.drawMarker(markersId[0], 200);
 	auto corners = imalig::Imalig().process(barcode, image, markersId[0], markersCorners[0]);
 
 	REQUIRE_FALSE(corners.empty());

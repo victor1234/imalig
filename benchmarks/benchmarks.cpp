@@ -7,17 +7,32 @@
 
 #include <imalig/imalig.hpp>
 
-TEST_CASE("Main")
+TEST_CASE("BarcodeDetector")
 {
-	cv::Mat barcode = cv::imread("fixtures/barcode.png", cv::IMREAD_GRAYSCALE);
+  cv::Mat barcode = cv::imread("fixtures/barcode.png", cv::IMREAD_GRAYSCALE);
+  cv::Mat image = cv::imread("fixtures/image.jpg", cv::IMREAD_GRAYSCALE);
+
+  BENCHMARK("BarcodeDetector::detect")
+  {
+    imalig::BarcodeDetector barcodeDetector;
+    auto [markersId, markersCorners] = barcodeDetector.detect(image);
+    return markersCorners;
+  };
+}
+
+TEST_CASE("Imalig")
+{
 	cv::Mat image = cv::imread("fixtures/image.jpg", cv::IMREAD_GRAYSCALE);
 
 	imalig::BarcodeDetector barcodeDetector;
 	auto [markersId, markersCorners] = barcodeDetector.detect(image);
 
+  cv::Mat barcode = barcodeDetector.drawMarker(markersId[0], 200);
+
   imalig::Imalig imalig;
 	BENCHMARK("Imalig::process()")
 	{
 		auto corners = imalig.process(barcode, image, markersId[0], markersCorners[0]);
+    return corners;
 	};
 }
