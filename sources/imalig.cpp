@@ -21,10 +21,9 @@ std::vector<cv::Point2f> Imalig::process(const cv::Mat barcode, cv::Mat image, c
 
 	cv::Mat markerCorners0;
 	cv::Mat(markerCorners2i).convertTo(markerCorners0, CV_32F);
-	std::cout << markerCorners0 << std::endl;
 
 	cv::Mat H = cv::getPerspectiveTransform(markerCorners0, 0 + cv::Mat(markerCorners));
-	std::cout << "H = " << H << std::endl;
+	// std::cout << "H = " << H << std::endl;
 
 	/* Create ceres problem */
 	ceres::Problem problem;
@@ -37,12 +36,12 @@ std::vector<cv::Point2f> Imalig::process(const cv::Mat barcode, cv::Mat image, c
 	/* Run solver */
 	ceres::Solver::Options options;
 	options.linear_solver_type = ceres::DENSE_QR;
-	options.minimizer_progress_to_stdout = true;
+	// options.minimizer_progress_to_stdout = true;
 	options.max_num_iterations = 1000;
 	ceres::Solver::Summary summary;
 	ceres::Solve(options, &problem, &summary);
 
-	std::cout << summary.FullReport() << std::endl;
+	// std::cout << summary.FullReport() << std::endl;
 
 	/* Compute new marker corners */
 	std::vector<cv::Point2f> preciseMarkerCorners;

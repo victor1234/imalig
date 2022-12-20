@@ -7,7 +7,6 @@
 
 TEST_CASE("BarcodeDetector")
 {
-	cv::Mat barcode = cv::imread("fixtures/barcode.png", cv::IMREAD_GRAYSCALE);
 	cv::Mat image = cv::imread("fixtures/image.jpg", cv::IMREAD_GRAYSCALE);
 
 	BENCHMARK("BarcodeDetector::detect")
