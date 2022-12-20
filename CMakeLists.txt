@@ -7,7 +7,8 @@ find_package(Catch2 REQUIRED)
 find_package(Ceres REQUIRED)
 
 set(IA_TARGET_NAME ${PROJECT_NAME})
-add_library(${IA_TARGET_NAME} sources/imalig.cpp)
+add_library(${IA_TARGET_NAME} sources/imalig.cpp
+				sources/BarcodeDetector.cpp)
 
 # Set compiler features
 target_compile_features(${IA_TARGET_NAME} PUBLIC cxx_std_11)
