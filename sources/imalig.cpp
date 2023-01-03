@@ -36,7 +36,7 @@ std::vector<cv::Point2f> Imalig::process(const cv::Mat barcode, cv::Mat image, c
 	/* Run solver */
 	ceres::Solver::Options options;
 	options.linear_solver_type = ceres::DENSE_QR;
-	// options.minimizer_progress_to_stdout = true;
+	options.minimizer_progress_to_stdout = false;
 	options.max_num_iterations = 1000;
 	ceres::Solver::Summary summary;
 	ceres::Solve(options, &problem, &summary);
@@ -46,10 +46,10 @@ std::vector<cv::Point2f> Imalig::process(const cv::Mat barcode, cv::Mat image, c
 	/* Compute new marker corners */
 	std::vector<cv::Point2f> preciseMarkerCorners;
 	for (const auto &cp : markerCorners2i) {
-		std::cout << cp << std::endl;
+		// std::cout << cp << std::endl;
 		cv::Vec3d p(cp.x, cp.y, 1);
 		cv::Vec3d p2 = cv::Matx33d(H) * p;
-		std::cout << p2 << std::endl;
+		// std::cout << p2 << std::endl;
 		preciseMarkerCorners.emplace_back(cv::Point2d(p2[0] / p2[2], p2[1] / p2[2]));
 	}
 
