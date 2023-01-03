@@ -11,6 +11,8 @@ TEST_CASE("Main")
 	imalig::BarcodeDetector barcodeDetector;
 	auto [markersId, markersCorners] = barcodeDetector.detect(image);
 
+  REQUIRE_FALSE(markersId.empty());
+
 	cv::Mat barcode = barcodeDetector.drawMarker(markersId[0], 200);
 	auto corners = imalig::Imalig().process(barcode, image, markersId[0], markersCorners[0]);
 
