@@ -38,11 +38,19 @@ jobs:
         run: |
           pipx install conan==${{ env.CONAN_VERSION }}
 
+      - name: Create profile
+        run: |
+          conan profile new default --detect
+
+      - name: Set libstdc++11
+        if: matrix.os == 'ubuntu-20.04'
+        run: conan profile update settings.compiler.libcxx=libstdc++11 default
+
       - name: Build tests, benchmarks and examples
         run: |
           mkdir build
           cd build
-          conan install .. -s build_type=Debug
+          conan install .. -s build_type=${{ matrix.build_type }} -pr:b=default
           cmake -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}  ..
           cmake --build . -j --config ${{ matrix.build_type }}
 
