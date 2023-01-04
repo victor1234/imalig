@@ -3,6 +3,11 @@ Precise image alignment and camera pose estimation library. Useful for AR, drone
 
 _Under active development. Please check later._
 
+## Features
+- High precision subpixel image alignment
+- Crossplatform, `arm64` support
+- Easy to deploy, `conan` support
+
 ## Install
 ### With conan (recommended way)
 #### Dependencies
