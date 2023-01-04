@@ -9,14 +9,17 @@
 
 TEST_CASE("Main")
 {
+	/* Load image */
 	cv::Mat image = cv::imread("fixtures/image.jpg", cv::IMREAD_GRAYSCALE);
 	cv::resize(image, image, {}, 0.25, 0.25);
 
+	/* Detect marker */
 	imalig::BarcodeDetector barcodeDetector;
 	auto [markersId, markersCorners] = barcodeDetector.detect(image);
 
 	REQUIRE_FALSE(markersId.empty());
 
+	/* Create synth marker image */
 	cv::Mat barcode = barcodeDetector.drawMarker(markersId[0], markersCorners[0]);
 
 	std::vector<cv::Mat> cornersList;
@@ -55,6 +58,7 @@ TEST_CASE("Main")
 
 	double maxValue;
 	cv::minMaxLoc(std, nullptr, &maxValue);
+
 	REQUIRE(maxValue < 1e-4);
 	REQUIRE(false);
 }

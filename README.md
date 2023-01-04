@@ -21,7 +21,9 @@ mkdir build && cd build
 conan install .. --build=missing
 cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build .
+sudo cmake --install .
 ```
+
 ### Without conan
 #### Dependencies
 - OpenCV
@@ -31,9 +33,18 @@ cmake --build .
 ```
 cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build .
+sudo cmake --install .
 ```
 
 ## Example
 ```
 ./imalig_example 23 image.jpg
+```
+
+## CMake integration
+```cmake
+find_package(imalig REQUIRED)
+
+add_executable(program program.cpp)
+target_link_libraries(program imalig::imalig)
 ```
