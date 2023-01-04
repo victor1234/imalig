@@ -50,7 +50,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          conan install .. -s build_type=${{ matrix.build_type }} -pr:b=default --build=missing
+          conan install .. -s build_type=${{ matrix.build_type }} -pr:b=default
           cmake -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}  ..
           cmake --build . -j --config ${{ matrix.build_type }}
 
