@@ -16,13 +16,13 @@ TEST_CASE("Main")
 
 	REQUIRE_FALSE(markersId.empty());
 
-  float size = std::max(cv::norm(markersCorners[0][0] - markersCorners[0][2]),
-                        cv::norm(markersCorners[0][1] - markersCorners[0][3]));
-  std::cout << "size: " << size << std::endl;
+	float size = std::max(cv::norm(markersCorners[0][0] - markersCorners[0][2]),
+						  cv::norm(markersCorners[0][1] - markersCorners[0][3]));
+	std::cout << "size: " << size << std::endl;
 	cv::Mat barcode = barcodeDetector.drawMarker(markersId[0], size);
 
-  std::vector<cv::Mat> cornersList;
-  constexpr float m = 20;
+	std::vector<cv::Mat> cornersList;
+	constexpr float m = 20;
 	for (size_t i = 0; i < 5; ++i) {
 		auto markerCorners = markersCorners[0];
 		/* Add random noise */
@@ -39,24 +39,24 @@ TEST_CASE("Main")
 		cornersList.push_back(cv::Mat(corners).clone());
 	}
 
-  /* Calculate mean */
-  cv::Mat mean = cv::Mat::zeros(cornersList[0].size(), cornersList[0].type());
-  for (const auto m: cornersList) {
-    mean += m;
-  }
-  mean /= cornersList.size();
+	/* Calculate mean */
+	cv::Mat mean = cv::Mat::zeros(cornersList[0].size(), cornersList[0].type());
+	for (const auto m : cornersList) {
+		mean += m;
+	}
+	mean /= cornersList.size();
 
-  /* Calculate std */
-  cv::Mat std(cornersList[0].size(), cornersList[0].type(), cv::Scalar(0));
-  for (const auto m: cornersList) {
-    std += (m - mean).mul(m - mean);
-  }
+	/* Calculate std */
+	cv::Mat std(cornersList[0].size(), cornersList[0].type(), cv::Scalar(0));
+	for (const auto m : cornersList) {
+		std += (m - mean).mul(m - mean);
+	}
 
-  CAPTURE(mean);
-  CAPTURE(std);
+	CAPTURE(mean);
+	CAPTURE(std);
 
-  double maxValue;
-  cv::minMaxLoc(std, nullptr, &maxValue);
-  REQUIRE(false);
-  REQUIRE(maxValue < 1e-5);
+	double maxValue;
+	cv::minMaxLoc(std, nullptr, &maxValue);
+	REQUIRE(false);
+	REQUIRE(maxValue < 1e-5);
 }
