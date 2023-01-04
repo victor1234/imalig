@@ -6,15 +6,15 @@ ceres-solver/2.1.0
 eigen/3.4.0
 
 [options]
-opencv:contrib=True
-opencv:with_ade=False
-opencv:with_tiff=False
-opencv:with_webp=False
+#opencv:contrib=True
+#opencv:with_ade=False
+#opencv:with_tiff=False
+#opencv:with_webp=False
 #opencv_with:with_gtk=False
 #opencv_with:with_quirc=False
 #opencv_with:with_ffmpeg=False
 #opencv_with:neon=False
-opencv_with:dnn=False
+#opencv_with:dnn=False
 
 
 [generators]
