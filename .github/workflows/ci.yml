@@ -1,0 +1,16 @@
+name: CI actions
+on:
+  push:
+    branches: [ master ]
+jobs:
+  format_check:
+    name: Check C++ format and style
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: pipx install clang-format
+
+      - name: Run clang-format
+        run: find {benchmarks,tests,sources,imalig,examples}/ -name "*.cpp" -o -name "*.hpp" | xargs clang-format --dry-run --Werror
