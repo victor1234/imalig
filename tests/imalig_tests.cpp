@@ -5,6 +5,7 @@
 #include <opencv2/highgui.hpp>
 
 #include <imalig/imalig.hpp>
+#include <opencv2/imgproc.hpp>
 
 TEST_CASE("Main")
 {
@@ -15,10 +16,13 @@ TEST_CASE("Main")
 
 	REQUIRE_FALSE(markersId.empty());
 
-	cv::Mat barcode = barcodeDetector.drawMarker(markersId[0], 200);
+  float size = std::max(cv::norm(markersCorners[0][0] - markersCorners[0][2]),
+                        cv::norm(markersCorners[0][1] - markersCorners[0][3]));
+  std::cout << "size: " << size << std::endl;
+	cv::Mat barcode = barcodeDetector.drawMarker(markersId[0], size);
 
   std::vector<cv::Mat> cornersList;
-  constexpr float m = 5;
+  constexpr float m = 20;
 	for (size_t i = 0; i < 5; ++i) {
 		auto markerCorners = markersCorners[0];
 		/* Add random noise */
