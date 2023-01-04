@@ -2,9 +2,11 @@ name: CI actions
 on:
   push:
     branches: [ master ]
+    paths-ignore:
+      - README.md
 
 env:
-  CONAN_VERSION: 1.53.0
+  CONAN_VERSION: 1.54.0
 
 jobs:
   format_check:
@@ -49,11 +51,12 @@ jobs:
           cd build
           ctest --output-on-failure
 
-      # - name: Install wavelet_buffer
-      #   if: matrix.os == 'ubuntu-22.04'
-      #   run: |
-      #     cd build
-      #     sudo cmake --install .
-      # - name: Check cmake target installation
-      #   if: matrix.os == 'ubuntu-22.04'
-      #   run: cmake --find-package -DNAME=wavelet_buffer -DCOMPILER_ID=GNU -DLANGUAGE=CXX -DMODE=EXIST
+      - name: Install imalig
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          cd build
+          sudo cmake --install .
+
+      - name: Check cmake target installation
+        if: matrix.os == 'ubuntu-22.04'
+        run: cmake --find-package -DNAME=imalig -DCOMPILER_ID=GNU -DLANGUAGE=CXX -DMODE=EXIST

@@ -1,5 +1,5 @@
 # Imalig
-Precise image alignment and camera pose estimation library. Useful for AR, drone landing, SLAM. 
+Precise image alignment and camera pose estimation library. Useful for AR, drone landing, SLAM.
 
 _Under active development. Please check later._
 
@@ -11,7 +11,7 @@ _Under active development. Please check later._
 ## Install
 ### With conan (recommended way)
 #### Dependencies
-- conan >= 1.53.0
+- conan >= 1.54.0
 ```
 pipx install conan
 ```
