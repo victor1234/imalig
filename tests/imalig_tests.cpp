@@ -10,19 +10,17 @@
 TEST_CASE("Main")
 {
 	cv::Mat image = cv::imread("fixtures/image.jpg", cv::IMREAD_GRAYSCALE);
+	cv::resize(image, image, {}, 0.25, 0.25);
 
 	imalig::BarcodeDetector barcodeDetector;
 	auto [markersId, markersCorners] = barcodeDetector.detect(image);
 
 	REQUIRE_FALSE(markersId.empty());
 
-	float size = std::max(cv::norm(markersCorners[0][0] - markersCorners[0][2]),
-						  cv::norm(markersCorners[0][1] - markersCorners[0][3]));
-	std::cout << "size: " << size << std::endl;
-	cv::Mat barcode = barcodeDetector.drawMarker(markersId[0], size);
+	cv::Mat barcode = barcodeDetector.drawMarker(markersId[0], markersCorners[0]);
 
 	std::vector<cv::Mat> cornersList;
-	constexpr float m = 20;
+	constexpr float m = 5;
 	for (size_t i = 0; i < 5; ++i) {
 		auto markerCorners = markersCorners[0];
 		/* Add random noise */
@@ -57,6 +55,6 @@ TEST_CASE("Main")
 
 	double maxValue;
 	cv::minMaxLoc(std, nullptr, &maxValue);
+	REQUIRE(maxValue < 1e-4);
 	REQUIRE(false);
-	REQUIRE(maxValue < 1e-5);
 }

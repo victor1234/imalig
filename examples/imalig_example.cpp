@@ -1,24 +1,24 @@
 #include "imalig/BarcodeDetector.hpp"
+#include "imalig/imalig.hpp"
+
 #include <iostream>
 #include <opencv2/highgui.hpp>
-
-#include <imalig/imalig.hpp>
 #include <opencv2/imgproc.hpp>
 
 int main(int argc, char *argv[])
 {
 	if (argc < 3) {
-		std::cout << "Usage: " << argv[0] << " <barcode> <image>" << std::endl;
+		std::cout << "Usage: " << argv[0] << " <marker_id> <image>" << std::endl;
 		return 1;
 	}
 
-	int markerId = std::stoi(argv[1]);
-	cv::Mat image = cv::imread(argv[2], cv::IMREAD_COLOR);
+	const int markerId = std::stoi(argv[1]);
+	const cv::Mat image = cv::imread(argv[2], cv::IMREAD_COLOR);
 
 	/* Create barcode detector */
 	imalig::BarcodeDetector barcodeDetector;
 
-	/* Detect markers */
+	/* Detect markers in grayscale */
 	cv::Mat imageGray;
 	cv::cvtColor(image, imageGray, cv::COLOR_BGR2GRAY);
 	auto [markersId, markersCorners] = barcodeDetector.detect(imageGray);
@@ -29,14 +29,13 @@ int main(int argc, char *argv[])
 	cv::Mat outImage = image.clone();
 	cv::aruco::drawDetectedMarkers(outImage, markersCorners, markersId);
 	imshow("result", outImage);
-	cv::waitKey(0);
 
 	/* Run imalig */
-	cv::Mat barcode = barcodeDetector.drawMarker(markerId, 200);
+	cv::Mat barcode = barcodeDetector.drawMarker(markerId, markersCorners[0]);
 	auto corners = imalig::Imalig().process(barcode, imageGray, markersId[0], markersCorners[0]);
 	std::cout << "corners = " << corners << std::endl;
 
-	cv::Mat outImage2 = image.clone();
+	/* Draw aligned marker */
 	markersCorners[0] = corners;
 	cv::aruco::drawDetectedMarkers(outImage, markersCorners, markersId, {0, 0, 255});
 

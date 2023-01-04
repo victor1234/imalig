@@ -13,6 +13,13 @@ cv::Mat BarcodeDetector::drawMarker(int id, int size)
 	return markerImage;
 }
 
+cv::Mat BarcodeDetector::drawMarker(int id, std::vector<cv::Point2f> corners)
+{
+	cv::Mat markerImage;
+	int size = std::max(cv::norm(corners[0] - corners[2]), cv::norm(corners[1] - corners[3]));
+	return drawMarker(id, size);
+}
+
 std::tuple<std::vector<int>, std::vector<std::vector<cv::Point2f>>> BarcodeDetector::detect(const cv::Mat image)
 {
 	auto parameters = cv::aruco::DetectorParameters::create();
