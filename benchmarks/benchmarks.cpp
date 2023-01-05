@@ -1,4 +1,5 @@
 #include "imalig/BarcodeDetector.hpp"
+#include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/benchmark/catch_benchmark_all.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <opencv2/highgui.hpp>
@@ -9,11 +10,13 @@ TEST_CASE("BarcodeDetector")
 {
 	cv::Mat image = cv::imread("fixtures/image.jpg", cv::IMREAD_GRAYSCALE);
 
-	BENCHMARK("BarcodeDetector::detect")
+	BENCHMARK_ADVANCED("BarcodeDetector::detect")(Catch::Benchmark::Chronometer meter)
 	{
 		imalig::BarcodeDetector barcodeDetector;
-		auto [markersId, markersCorners] = barcodeDetector.detect(image);
-		return markersCorners;
+		meter.measure([&]() {
+			auto [markersId, markersCorners] = barcodeDetector.detect(image);
+			return markersCorners;
+		});
 	};
 }
 
