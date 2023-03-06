@@ -11,30 +11,32 @@ TEST_CASE("Main")
 {
 	/* Load image */
 	cv::Mat image = cv::imread("fixtures/image.jpg", cv::IMREAD_GRAYSCALE);
-	cv::resize(image, image, {}, 0.25, 0.25);
+	constexpr float k = 0.25;
+	cv::resize(image, image, {}, k, k);
 
 	/* Detect marker */
 	imalig::BarcodeDetector barcodeDetector;
 	auto [markersId, markersCorners] = barcodeDetector.detect(image);
 
 	REQUIRE_FALSE(markersId.empty());
+	REQUIRE(markersId.size() == 1);
 
 	/* Create synth marker image */
 	cv::Mat barcode = barcodeDetector.drawMarker(markersId[0], markersCorners[0]);
 
 	std::vector<cv::Mat> cornersList;
-	constexpr float m = 5;
+	constexpr float d = 5;
 	for (size_t i = 0; i < 5; ++i) {
-		auto markerCorners = markersCorners[0];
+		auto &markerCorners = markersCorners[0];
 		/* Add random noise */
 		for (auto &c : markerCorners) {
-			float dx = GENERATE(take(1, random(-m, m)));
-			float dy = GENERATE(take(1, random(-m, m)));
+			float dx = GENERATE(take(1, random(-d, d)));
+			float dy = GENERATE(take(1, random(-d, d)));
 			c.x += dx;
 			c.y += dy;
 		}
 
-		auto corners = imalig::Imalig().process(barcode, image, markersId[0], markerCorners);
+		const auto corners = imalig::Imalig().process(barcode, image, markersId[0], markerCorners);
 		REQUIRE_FALSE(corners.empty());
 
 		cornersList.push_back(cv::Mat(corners).clone());

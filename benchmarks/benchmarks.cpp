@@ -8,7 +8,7 @@
 
 TEST_CASE("BarcodeDetector")
 {
-	cv::Mat image = cv::imread("fixtures/image.jpg", cv::IMREAD_GRAYSCALE);
+	const cv::Mat image = cv::imread("fixtures/image.jpg", cv::IMREAD_GRAYSCALE);
 
 	BENCHMARK_ADVANCED("BarcodeDetector::detect")(Catch::Benchmark::Chronometer meter)
 	{
@@ -22,12 +22,12 @@ TEST_CASE("BarcodeDetector")
 
 TEST_CASE("Imalig")
 {
-	cv::Mat image = cv::imread("fixtures/image.jpg", cv::IMREAD_GRAYSCALE);
+	const cv::Mat image = cv::imread("fixtures/image.jpg", cv::IMREAD_GRAYSCALE);
 
 	imalig::BarcodeDetector barcodeDetector;
 	auto [markersId, markersCorners] = barcodeDetector.detect(image);
 
-	cv::Mat barcode = barcodeDetector.drawMarker(markersId[0], 200);
+	const cv::Mat barcode = barcodeDetector.drawMarker(markersId[0], markersCorners[0]);
 
 	imalig::Imalig imalig;
 	BENCHMARK("Imalig::process()")

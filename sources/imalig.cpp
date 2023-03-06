@@ -16,22 +16,26 @@ namespace imalig {
 std::vector<cv::Point2f> Imalig::process(const cv::Mat barcode, cv::Mat image, const int markerId,
 										 const std::vector<cv::Point2f> markerCorners)
 {
-	std::vector<cv::Point2i> markerCorners2i = {
+	/* Set synthetic marker corners */
+	const std::vector<cv::Point2i> markerCorners2i = {
 		{0, 0}, {barcode.rows, 0}, {barcode.rows, barcode.cols}, {0, barcode.cols}};
 
+	/* Convert to cv::Mat */
 	cv::Mat markerCorners0;
 	cv::Mat(markerCorners2i).convertTo(markerCorners0, CV_32F);
 
-	cv::Mat H = cv::getPerspectiveTransform(markerCorners0, 0 + cv::Mat(markerCorners));
+	/* Get initial H */
+	cv::Mat H = cv::getPerspectiveTransform(markerCorners0, cv::Mat(markerCorners));
 	// std::cout << "H = " << H << std::endl;
 
 	/* Create ceres problem */
 	ceres::Problem problem;
 
-	ceres::CostFunction *costFunction = new ceres::AutoDiffCostFunction<CostFunctor, ceres::DYNAMIC, 9>(
+	std::array<double, 2> d = {0, 1};
+	ceres::CostFunction *costFunction = new ceres::AutoDiffCostFunction<CostFunctor, ceres::DYNAMIC, 9, 2>(
 		new CostFunctor(barcode, image), barcode.rows * barcode.cols);
 
-	problem.AddResidualBlock(costFunction, nullptr, H.ptr<double>());
+	problem.AddResidualBlock(costFunction, nullptr, H.ptr<double>(), d.data());
 
 	/* Run solver */
 	ceres::Solver::Options options;

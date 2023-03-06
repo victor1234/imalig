@@ -22,7 +22,7 @@ cv::Mat BarcodeDetector::drawMarker(int id, std::vector<cv::Point2f> corners)
 
 std::tuple<std::vector<int>, std::vector<std::vector<cv::Point2f>>> BarcodeDetector::detect(const cv::Mat image)
 {
-	auto parameters = cv::aruco::DetectorParameters::create();
+	const auto parameters = cv::aruco::DetectorParameters::create();
 
 	std::vector<int> markersId;
 	std::vector<std::vector<cv::Point2f>> markersCorners, rejectedCandidates;
