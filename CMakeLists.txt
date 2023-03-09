@@ -5,6 +5,7 @@ project(imalig VERSION 0.1.0)
 find_package(OpenCV REQUIRED)
 find_package(Catch2 REQUIRED)
 find_package(Ceres REQUIRED)
+find_package(spdlog REQUIRED)
 
 # Create target
 set(IA_TARGET_NAME ${PROJECT_NAME})
@@ -28,14 +29,15 @@ target_include_directories(
 # Link libraries
 target_link_libraries(${IA_TARGET_NAME} opencv::opencv)
 target_link_libraries(${IA_TARGET_NAME} Ceres::ceres)
+target_link_libraries(${IA_TARGET_NAME} spdlog::spdlog)
 
 # Set compiler features
 target_compile_features(${IA_TARGET_NAME} PUBLIC cxx_std_20)
 set_target_properties(${IA_TARGET_NAME} PROPERTIES CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(tests)
-add_subdirectory(examples)
-add_subdirectory(benchmarks)
+#add_subdirectory(examples)
+#add_subdirectory(benchmarks)
 
 # Install rules
 include(GNUInstallDirs)

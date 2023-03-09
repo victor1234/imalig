@@ -11,6 +11,9 @@
 #include <ceres/ceres.h>
 #include <ceres/cubic_interpolation.h>
 
+#include <spdlog/fmt/ostr.h>
+#include <spdlog/spdlog.h>
+
 namespace imalig {
 
 std::vector<cv::Point2f> Imalig::process(const cv::Mat barcode, cv::Mat image, const int markerId,
@@ -20,19 +23,19 @@ std::vector<cv::Point2f> Imalig::process(const cv::Mat barcode, cv::Mat image, c
 	const std::vector<cv::Point2i> markerCorners2i = {
 		{0, 0}, {barcode.rows, 0}, {barcode.rows, barcode.cols}, {0, barcode.cols}};
 
-	/* Convert to cv::Mat */
+	/* Convert to cv::Mat32 */
 	cv::Mat markerCorners0;
 	cv::Mat(markerCorners2i).convertTo(markerCorners0, CV_32F);
 
 	/* Get initial H */
 	cv::Mat H = cv::getPerspectiveTransform(markerCorners0, cv::Mat(markerCorners));
-	// std::cout << "H = " << H << std::endl;
+	// std::cout << "H: " << H << std::endl;
 
 	/* Create ceres problem */
 	ceres::Problem problem;
 
-	std::array<double, 2> d = {0, 1};
-	ceres::CostFunction *costFunction = new ceres::AutoDiffCostFunction<CostFunctor, ceres::DYNAMIC, 9, 2>(
+	std::array<double, 2> d = {1, 1};
+	ceres::CostFunction *costFunction = new ceres::AutoDiffCostFunction<CostFunctor, ceres::DYNAMIC, 8, 1>(
 		new CostFunctor(barcode, image), barcode.rows * barcode.cols);
 
 	problem.AddResidualBlock(costFunction, nullptr, H.ptr<double>(), d.data());
@@ -42,10 +45,11 @@ std::vector<cv::Point2f> Imalig::process(const cv::Mat barcode, cv::Mat image, c
 	options.linear_solver_type = ceres::DENSE_QR;
 	options.minimizer_progress_to_stdout = false;
 	options.max_num_iterations = 1000;
+	options.logging_type = ceres::SILENT;
 	ceres::Solver::Summary summary;
 	ceres::Solve(options, &problem, &summary);
 
-	// std::cout << summary.FullReport() << std::endl;
+	// spdlog::info(summary.FullReport());
 
 	/* Compute new marker corners */
 	std::vector<cv::Point2f> preciseMarkerCorners;
@@ -56,6 +60,8 @@ std::vector<cv::Point2f> Imalig::process(const cv::Mat barcode, cv::Mat image, c
 		// std::cout << p2 << std::endl;
 		preciseMarkerCorners.emplace_back(cv::Point2d(p2[0] / p2[2], p2[1] / p2[2]));
 	}
+
+	// spdlog::info("d: {:.2f} {:.2F}", d[0], d[1]);
 
 	return preciseMarkerCorners;
 }
