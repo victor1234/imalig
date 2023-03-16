@@ -14,6 +14,7 @@
 
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
+#include <types.h>
 
 namespace imalig {
 
@@ -60,7 +61,7 @@ class DrawCornersCallback : public ceres::IterationCallback {
 		// std::cout << "H: " << summary.user_state[0] << std::endl;
 
 		cv::imshow("corners", image);
-		cv::waitKey(100);
+		cv::waitKey(10);
 		return ceres::SOLVER_CONTINUE;
 	}
 
@@ -70,7 +71,7 @@ class DrawCornersCallback : public ceres::IterationCallback {
 	cv::Mat H_;
 };
 
-std::vector<cv::Point2f> Imalig::process(const cv::Mat barcode, cv::Mat image, const int markerId,
+std::vector<cv::Point2f> Imalig::process(const cv::Mat &barcode, const cv::Mat &image, const int markerId,
 										 const std::vector<cv::Point2f> markerCorners)
 {
 	/* Set synthetic marker corners */
@@ -85,27 +86,32 @@ std::vector<cv::Point2f> Imalig::process(const cv::Mat barcode, cv::Mat image, c
 	cv::Mat H = cv::getPerspectiveTransform(markerCorners0, cv::Mat(markerCorners));
 	// std::cout << "H: " << H << std::endl;
 
+	/* Get barcode mask */
+	cv::Mat mask = getMask(barcode, 20);
+	spdlog::info("Masking ratio: {}", cv::countNonZero(mask) / (double)mask.total());
+
 	/* Create ceres problem */
 	ceres::Problem problem;
 
-	std::array<double, 2> d = {1, 1};
-	ceres::CostFunction *costFunction = new ceres::AutoDiffCostFunction<CostFunctor, ceres::DYNAMIC, 8, 1>(
-		new CostFunctor(barcode, image), barcode.rows * barcode.cols);
+	ceres::CostFunction *costFunction = new ceres::AutoDiffCostFunction<CostFunctor, ceres::DYNAMIC, 8>(
+		new CostFunctor(barcode, mask, image), cv::countNonZero(mask));
 
-	problem.AddResidualBlock(costFunction, nullptr, H.ptr<double>(), d.data());
+	problem.AddResidualBlock(costFunction, nullptr, H.ptr<double>());
 
 	/* Run solver */
 	ceres::Solver::Options options;
 	options.linear_solver_type = ceres::DENSE_QR;
+	// options.linear_solver_type = ceres::SPARSE_NORMAL_CHOLESKY;
 	options.minimizer_progress_to_stdout = false;
 	options.max_num_iterations = 1000;
 	options.logging_type = ceres::SILENT;
 	options.update_state_every_iteration = true;
-	options.callbacks = {new DrawCornersCallback(image, markerCorners0, H)};
+	// options.callbacks = {new DrawCornersCallback(image, markerCorners0, H)};
+	options.use_nonmonotonic_steps = true;
 	ceres::Solver::Summary summary;
 	ceres::Solve(options, &problem, &summary);
 
-	// spdlog::info(summary.FullReport());
+	spdlog::info(summary.FullReport());
 
 	/* Compute new marker corners */
 	auto preciseMarkerCorners = cornersFromH(markerCorners0, H);
@@ -113,6 +119,20 @@ std::vector<cv::Point2f> Imalig::process(const cv::Mat barcode, cv::Mat image, c
 	// spdlog::info("d: {:.2f} {:.2F}", d[0], d[1]);
 
 	return preciseMarkerCorners;
+}
+
+cv::Mat Imalig::getMask(const cv::Mat &barcode, const int radious)
+{
+	cv::Mat mask;
+	if (radious == -1) {
+		mask = cv::Mat(barcode.rows, barcode.cols, CV_8UC1, cv::Scalar(255));
+	} else {
+		cv::blur(barcode, mask, cv::Size(radious, radious));
+		// set 255 to zero
+		cv::threshold(mask, mask, 254, 0, cv::THRESH_TOZERO_INV);
+	}
+
+	return mask;
 }
 
 } // namespace imalig

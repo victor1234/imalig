@@ -38,8 +38,8 @@ TEST_CASE("Main")
 
 	std::vector<cv::Mat> cornersList;
 	constexpr float d = 3;
-	for (size_t i = 0; i < 5; ++i) {
-		auto &markerCorners = markersCorners[0];
+	for (size_t i = 0; i < 50; ++i) {
+		auto markerCorners = markersCorners[0];
 		/* Add random noise */
 		for (auto &c : markerCorners) {
 			float dx = GENERATE(take(1, random(-d, d)));

@@ -29,10 +29,10 @@ TEST_CASE("Imalig")
 
 	const cv::Mat barcode = barcodeDetector.drawMarker(markersId[0], markersCorners[0]);
 
-	imalig::Imalig imalig;
+	// imalig::Imalig imalig;
 	BENCHMARK("Imalig::process()")
 	{
-		auto corners = imalig.process(barcode, image, markersId[0], markersCorners[0]);
+		auto corners = imalig::Imalig().process(barcode, image, markersId[0], markersCorners[0]);
 		return corners;
 	};
 }
