@@ -5,15 +5,35 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 
+#include <argumentum/argparse.h>
+#include <fmt/ostream.h>
+#include <spdlog/spdlog.h>
+
+using namespace argumentum;
+
 int main(int argc, char *argv[])
 {
-	if (argc < 3) {
-		std::cout << "Usage: " << argv[0] << " <marker_id> <image>" << std::endl;
-		return 1;
-	}
+	int marker_id;
+	std::string image_filename;
 
-	const int markerId = std::stoi(argv[1]);
-	const cv::Mat image = cv::imread(argv[2], cv::IMREAD_COLOR);
+	/* Configure argumentum */
+	auto parser = argument_parser{};
+	auto params = parser.params();
+	parser.config().program(argv[0]).description("imalig example");
+	params.add_parameter(marker_id, "id").help("Marker ID");
+	params.add_parameter(image_filename, "image").help("Image filepath");
+
+	if (!parser.parse_args(argc, argv, 1))
+		return 1;
+
+	/* Load image */
+	const cv::Mat image = cv::imread(image_filename, cv::IMREAD_COLOR);
+	if (image.empty()) {
+		spdlog::error("Could not read the image: {}", image_filename);
+		return 1;
+	} else {
+		spdlog::info("Image resolution: {}x{}", image.cols, image.rows);
+	}
 
 	/* Create barcode detector */
 	imalig::BarcodeDetector barcodeDetector;
@@ -22,6 +42,8 @@ int main(int argc, char *argv[])
 	cv::Mat imageGray;
 	cv::cvtColor(image, imageGray, cv::COLOR_BGR2GRAY);
 	auto [markersId, markersCorners] = barcodeDetector.detect(imageGray);
+
+	spdlog::info("Detected markers ids: [{}]", markersId[0]);
 
 	/* Show result */
 	// cv::imshow("barcode", barcode);

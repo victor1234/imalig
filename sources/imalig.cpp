@@ -87,7 +87,7 @@ std::vector<cv::Point2f> Imalig::process(const cv::Mat &barcode, const cv::Mat &
 	// std::cout << "H: " << H << std::endl;
 
 	/* Get barcode mask */
-	cv::Mat mask = getMask(barcode, 20);
+	cv::Mat mask = getMask(barcode, -1);
 	spdlog::info("Masking ratio: {}", cv::countNonZero(mask) / (double)mask.total());
 
 	/* Create ceres problem */

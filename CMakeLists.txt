@@ -7,16 +7,21 @@ find_package(Catch2 REQUIRED)
 find_package(Ceres REQUIRED)
 find_package(spdlog REQUIRED)
 
+# Fetch argumentum
+include(FetchContent)
+fetchcontent_declare(
+    Argumentum
+    GIT_REPOSITORY https://github.com/mmahnic/argumentum.git
+    GIT_TAG master
+)
+fetchcontent_makeavailable(Argumentum)
+
 # Create target
 set(IA_TARGET_NAME ${PROJECT_NAME})
 add_library(${IA_TARGET_NAME} sources/imalig.cpp sources/BarcodeDetector.cpp)
 
 # Add alias
 add_library(${IA_TARGET_NAME}::${IA_TARGET_NAME} ALIAS ${IA_TARGET_NAME})
-
-# Set compiler features
-target_compile_features(${IA_TARGET_NAME} PUBLIC cxx_std_11)
-set_target_properties(${IA_TARGET_NAME} PROPERTIES CXX_STANDARD_REQUIRED ON)
 
 # Include paths
 target_include_directories(
@@ -30,13 +35,14 @@ target_include_directories(
 target_link_libraries(${IA_TARGET_NAME} opencv::opencv)
 target_link_libraries(${IA_TARGET_NAME} Ceres::ceres)
 target_link_libraries(${IA_TARGET_NAME} spdlog::spdlog)
+target_link_libraries(${IA_TARGET_NAME} Argumentum::argumentum)
 
 # Set compiler features
 target_compile_features(${IA_TARGET_NAME} PUBLIC cxx_std_20)
 set_target_properties(${IA_TARGET_NAME} PROPERTIES CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(tests)
-#add_subdirectory(examples)
+add_subdirectory(examples)
 add_subdirectory(benchmarks)
 
 # Install rules
