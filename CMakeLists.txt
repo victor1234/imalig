@@ -8,11 +8,13 @@ find_package(Ceres REQUIRED)
 find_package(spdlog REQUIRED)
 
 # Fetch argumentum
+set(FETCHCONTENT_QUIET OFF)
+set(ARGUMENTUM_BUILD_STATIC_LIBS ON)
 include(FetchContent)
 fetchcontent_declare(
     Argumentum
     GIT_REPOSITORY https://github.com/mmahnic/argumentum.git
-    GIT_TAG master
+    GIT_TAG v0.3.2
 )
 fetchcontent_makeavailable(Argumentum)
 
@@ -38,7 +40,7 @@ target_link_libraries(${IA_TARGET_NAME} spdlog::spdlog)
 target_link_libraries(${IA_TARGET_NAME} Argumentum::argumentum)
 
 # Set compiler features
-target_compile_features(${IA_TARGET_NAME} PUBLIC cxx_std_20)
+target_compile_features(${IA_TARGET_NAME} PUBLIC cxx_std_17)
 set_target_properties(${IA_TARGET_NAME} PROPERTIES CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(tests)

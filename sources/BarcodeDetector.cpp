@@ -3,7 +3,7 @@
 
 namespace imalig {
 
-BarcodeDetector::BarcodeDetector() { dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250); }
+BarcodeDetector::BarcodeDetector() { dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_5X5_50); }
 
 cv::Mat BarcodeDetector::drawMarker(int id, int size)
 {
