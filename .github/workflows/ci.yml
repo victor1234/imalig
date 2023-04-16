@@ -6,7 +6,7 @@ on:
       - README.md
 
 env:
-  CONAN_VERSION: 1.54.0
+  CONAN_VERSION: 1.59.0
 
 jobs:
   format_check:
