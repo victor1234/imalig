@@ -4,6 +4,13 @@ on:
     branches: [ master ]
     paths-ignore:
       - README.md
+      - CHANGELOG.md
+
+  pull_request:
+    branches: [ master ]
+    paths-ignore:
+      - README.md
+      - CHANGELOG.md
 
 env:
   CONAN_VERSION: 1.59.0
