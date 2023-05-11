@@ -1,0 +1,77 @@
+name: CI actions
+on:
+  push:
+    branches: [ master ]
+    paths-ignore:
+      - README.md
+      - CHANGELOG.md
+
+  pull_request:
+    branches: [ master ]
+    paths-ignore:
+      - README.md
+      - CHANGELOG.md
+
+env:
+  CONAN_VERSION: 1.59.0
+
+jobs:
+  format_check:
+    name: Check C++ format and style
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: pipx install clang-format
+
+      - name: Run clang-format
+        run: find {benchmarks,tests,sources,imalig,examples}/ -name "*.cpp" -o -name "*.hpp" | xargs clang-format --dry-run --Werror
+
+  build_and_test:
+    needs: [ format_check ]
+    runs-on: ${{ matrix.os }}
+    name: Build and test C++ part
+    strategy:
+      matrix:
+        build_type: [ Release ]
+        os: [ ubuntu-20.04, windows-2019, macos-12 ]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install conan
+        run: |
+          pipx install conan==${{ env.CONAN_VERSION }}
+
+      - name: Create profile
+        run: |
+          conan profile new default --detect
+
+      - name: Set libstdc++11
+        if: matrix.os == 'ubuntu-20.04'
+        run: conan profile update settings.compiler.libcxx=libstdc++11 default
+
+      - name: Build tests, benchmarks and examples
+        run: |
+          mkdir build
+          cd build
+          conan install .. -s build_type=${{ matrix.build_type }} -pr:b=default
+          cmake -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}  ..
+          cmake --build . -j --config ${{ matrix.build_type }}
+
+      - name: Run tests
+        run: |
+          cd build
+          ctest --output-on-failure
+
+      - name: Install imalig
+        if: matrix.os == 'ubuntu-20.04'
+        run: |
+          cd build
+          sudo cmake --install .
+
+      - name: Check cmake target installation
+        if: matrix.os == 'ubuntu-20.04'
+        run: cmake --find-package -DNAME=imalig -DCOMPILER_ID=GNU -DLANGUAGE=CXX -DMODE=EXIST
