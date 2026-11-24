@@ -1,7 +1,7 @@
 # Imalig
 Precise image alignment and camera pose estimation library. Useful for AR, drone landing, SLAM.
 
-_Under active development. Please check later._
+_Experimental. Not actively developed at the moment._
 
 ## Features
 - High precision subpixel image alignment
